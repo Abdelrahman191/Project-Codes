@@ -1,0 +1,76 @@
+#This is a mathematica code
+
+ClearAll["Global`*"];
+vStart = 2*Pi;
+ts = 0; tf = 10; color = {Red, Green, Blue};
+dt = {0.01, 0.001, 0.0001}; plot = 0*dt;(* initial conditions*)
+
+xPositionlist = Table[{}, Length[dt]];
+xVelositylist = Table[{}, Length[dt]];
+yPositionlist = Table[{}, Length[dt]];
+yVelositylist = Table[{}, Length[dt]];
+energy = Table[{}, Length[dt]];
+
+
+Do[
+ tl = Range[ts, tf, dt[[i]]];
+ 
+ xVelositylist[[i]] = 0*tl;
+ xPositionlist[[i]] = 0*tl;
+ yPositionlist[[i]] = 0*tl;
+ yVelositylist[[i]] = 0*tl;
+ energy[[i]] = 0*tl;
+ 
+ xVelositylist[[i, 1]] = 0;
+ yVelositylist[[i, 1]] = vStart;
+ xPositionlist[[i, 1]] = 1;
+ yPositionlist[[i, 1]] = 0;
+ 
+ const = 4*Pi^2*dt[[i]];
+ 
+ Do[
+  r = Sqrt[xPositionlist[[i, j - 1]]^2 + yPositionlist[[i, j - 1]]^2];
+  yVelositylist[[i, j]] = 
+   yVelositylist[[i, 
+     j - 1]] - (4*Pi^2*dt[[i]]*yPositionlist[[i, j - 1]]/(r^3));
+  yPositionlist[[i, j]] = 
+   yPositionlist[[i, j - 1]] + yVelositylist[[i, j]]*dt[[i]];
+  
+  xVelositylist[[i, j]] = 
+   xVelositylist[[i, j - 1]] - 
+    4*Pi^2*dt[[i]]*xPositionlist[[i, j - 1]]/r^(3);
+  xPositionlist[[i, j]] = 
+   xPositionlist[[i, j - 1]] + xVelositylist[[i, j]]*dt[[i]];
+  energy[[i, 
+    j]] = -4 (Pi^2/(2*
+        Sqrt[(yPositionlist[[i, j]] + 
+             dt[[i]]*yVelositylist[[i, j]])^2 + (xPositionlist[[i, 
+              j]] + dt[[i]]*xVelositylist[[i, j]])^2]))
+  
+  , {j, 2, Length [tl]}] ;
+ 
+ Tnl = Table[{tl[[l]], energy[[i, l]]}, {l, 
+    Length [xPositionlist[[i]]]}];
+ plot[[i]] = ListPlot[Tnl, PlotStyle -> color[[i]], AspectRatio -> 1]
+ , {i, Length[dt]}]
+
+Show[plot]
+fun := -19.739208740649804; pplot = 
+ Plot[fun, {x, 0, 10}, PlotStyle -> Brown];
+g1 = Graphics[{Red, PointSize[Medium], 
+    Point[{{0.5, -20.4}, {1, -20.4}, {1.5, -20.4}}]}];
+g2 = Graphics[{Green, PointSize[Medium], 
+    Point[{{0.5, -20.5}, {1, -20.5}, {1.5, -20.5}}]}];
+g3 = Graphics[{Blue, PointSize[Medium], 
+    Point[{{6, -20.4}, {6.5, -20.4}, {7, -20.4}}]}];
+g4 = Graphics[{Brown, Line[{{5.9, -20.5}, {7.1, -20.5}}]}];
+Show[plot, pplot, g1, g2, g3, g4, 
+ PlotRange -> {{0, 10}, {-20.5, -19}}, Frame -> True , 
+ FrameLabel -> {"Time(years)", "Energy per unit mass (AU^2/year^2"}, 
+ Epilog -> {Inset[
+    Style["dt=\!\(\*SuperscriptBox[\(10\), \(-2\)]\)", 
+     12], {3, -20.4}], 
+   Inset[Style["dt=\!\(\*SuperscriptBox[\(10\), \(-3\)]\)", 
+     12], {3, -20.5}], 
+   Inset[Style["dt=\!\(\*SuperscriptBox[\(10\), \(-4\)]\)", 
+     12], {9, -20.4}], Inset[Style["y= -19.739", 12], {9, -20.5}]}]
